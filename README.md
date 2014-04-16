@@ -18,12 +18,12 @@ Stampede will look for migrations in files in `./migrations/`, ending with `.sql
 select stampede.define_migration(
     id := 42,
     name := 'Add customer_id foreign key'
-    apply := ('
+    apply := '
         alter table orders
         add constraint orders_customer_fk
         foreign key (customer_id) references customers (id)
-    '),
-    unapply := ('drop constraint orders_customer_fk')
+    ',
+    unapply := 'drop constraint orders_customer_fk'
 );
 ```
 
