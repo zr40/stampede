@@ -27,7 +27,7 @@ select stampede.define_migration(
 );
 ```
 
-`apply` and `unapply` can contain any number of statements. `unapply` is optional.
+`apply` and `unapply` can contain any number of statements. `unapply` and `name` are optional.
 
 Migrations are executed in ascending order of `id`. Each migration must have a unique `id`.
 
