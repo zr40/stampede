@@ -79,10 +79,18 @@ begin
 end
 $$ language plpgsql;
 
+create or replace function stampede.reset() returns void as $$
+	drop schema if exists public cascade;
+	create schema public;
+	delete from stampede.applied_migrations;
+$$ language sql;
+
+
 create or replace function stampede.clean_up() returns void as $$
 	drop function stampede.define_migration(int, text, text, text);
 	drop function stampede.migrate();
 	drop function stampede.unapply();
+	drop function stampede.reset();
 	drop function stampede.apply_migration(pg_temp.migrations);
 	drop function stampede.unapply_migration(pg_temp.migrations);
 	drop function stampede.clean_up();

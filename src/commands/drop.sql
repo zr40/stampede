@@ -1,3 +1,3 @@
-\echo Unapplying migrations...
-select stampede.unapply();
+\echo 'Clearing `public` schema...'
+select stampede.reset();
 drop table stampede.applied_migrations;

@@ -34,13 +34,15 @@ Migrations are executed in ascending order of `id`. Each migration must have a u
 Commands
 --------
 
-Show usage: `stampede`
+* Show usage: `stampede`
+* Apply all migrations: `stampede migrate`
+* Unapply all migrations: `stampede unapply`
+* Unapply all, then apply all: `stampede stomp`
 
-Apply all migrations: `stampede migrate`
+These commands are useful when writing migrations:
 
-Unapply all migrations: `stampede drop`
-
-Unapply all, then apply all: `stampede stomp`
+* Drop schema `public`: `stampede drop`
+* Drop schema `public`, then apply all migrations: `stampede reset`
 
 TODO
 ----
