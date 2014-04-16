@@ -29,7 +29,7 @@ select stampede.define_migration(
 
 `apply` and `unapply` can contain any number of statements. `unapply` is optional.
 
-Migrations are executed in ascending order of `id`. Each migration must have a unique `id`, and the sequence of migration `id`s should start at 0.
+Migrations are executed in ascending order of `id`. Each migration must have a unique `id`.
 
 Commands
 --------
