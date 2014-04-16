@@ -1,6 +1,5 @@
 \o /dev/null
 
-\pset border 1
 \echo Stampede 0.0.0-dev
 \conninfo
 \echo
