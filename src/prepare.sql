@@ -23,7 +23,7 @@ create temporary table pg_temp.migrations (
 ) on commit drop;
 
 create or replace function stampede.define_migration(id int, apply text, name text default '', unapply text default null) returns void as $$
-insert into pg_temp.migrations (id, name, apply, unapply) values (id, name, apply, unapply);
+	insert into pg_temp.migrations (id, name, apply, unapply) values (id, name, apply, unapply);
 $$ language sql;
 
 create or replace function stampede.apply_migration(migration pg_temp.migrations) returns void as $$
