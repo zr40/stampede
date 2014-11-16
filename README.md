@@ -35,22 +35,14 @@ Commands
 --------
 
 * Show usage: `stampede`
+* List migrations and status: `stampede status`
 * Apply all migrations: `stampede migrate`
+* Apply the first unapplied migration: `stampede step`
+* Unapply the last applied migration: `stampede back`
+
+These commands are useful when writing and testing your migrations:
+
 * Unapply all migrations: `stampede unapply`
 * Unapply all, then apply all: `stampede stomp`
-
-These commands are useful when writing migrations:
-
 * Drop schema `public`: `stampede drop`
 * Drop schema `public`, then apply all migrations: `stampede reset`
-
-TODO
-----
-
-List migrations and status: `stampede status`
-
-Apply a single migration: `stampede step`
-
-Unapply a migration: `stampede back`
-
-Test unapply cycle: `stampede test`
