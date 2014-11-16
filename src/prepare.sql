@@ -27,8 +27,6 @@ create or replace function stampede.define_migration(id int, apply text, name te
 $$ language sql;
 
 create or replace function stampede.apply_migration(migration pg_temp.migrations) returns void as $$
-declare
-	missing_dependency text;
 begin
 	raise notice 'Applying migration %...', case when migration.name = '' then migration.id::text else migration.id || ': ' || migration.name end;
 
@@ -39,8 +37,6 @@ end
 $$ language plpgsql;
 
 create or replace function stampede.unapply_migration(migration pg_temp.migrations) returns void as $$
-declare
-	missing_dependency text;
 begin
 	raise notice 'Unapplying migration %...', case when migration.name = '' then migration.id::text else migration.id || ': ' || migration.name end;
 
