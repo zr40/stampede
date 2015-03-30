@@ -30,7 +30,7 @@ create or replace function stampede.show_migration_status(migration pg_temp.migr
 begin
 	if (select true from stampede.applied_migration where migration_id = migration.id)
 	then
-		raise notice 'Migration % is applied (%)\n', migration.id, migration.name;
+		raise notice 'Migration % is applied (%)', migration.id, migration.name;
 	else
 		raise notice 'Migration % is not applied (%)', migration.id, migration.name;
 	end if;
