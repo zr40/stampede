@@ -1,4 +1,4 @@
-\echo 'Clearing `public` schema...'
+\echo 'Clearing database...'
 select stampede.reset();
 
 \echo

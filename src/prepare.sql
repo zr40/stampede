@@ -1,8 +1,7 @@
 \o /dev/null
 
-\echo Stampede 1.0.0
+\echo Stampede 1.0.1
 \conninfo
-\echo
 
 set client_min_messages to warning;
 
@@ -21,6 +20,27 @@ create temporary table pg_temp.migration (
 	apply text not null,
 	unapply text
 ) on commit drop;
+
+create or replace function stampede.is_production() returns bool as $$
+    select current_database() not like '%development%';
+$$ language sql;
+
+create or replace function stampede.wait_in_production() returns void as $$
+    begin
+        if stampede.is_production() then
+            raise warning 'database contents will be destroyed. Will proceed in 5 seconds...';
+            perform pg_sleep(1);
+            raise warning 'database contents will be destroyed. Will proceed in 4 seconds...';
+            perform pg_sleep(1);
+            raise warning 'database contents will be destroyed. Will proceed in 3 seconds...';
+            perform pg_sleep(1);
+            raise warning 'database contents will be destroyed. Will proceed in 2 seconds...';
+            perform pg_sleep(1);
+            raise warning 'database contents will be destroyed. Will proceed in 1 seconds...';
+            perform pg_sleep(1);
+        end if;
+    end
+$$ language plpgsql;
 
 create or replace function stampede.define_migration(id int, apply text, name text default '', unapply text default null) returns void as $$
 	insert into pg_temp.migration (id, name, apply, unapply) values (id, name, apply, unapply);
@@ -99,6 +119,8 @@ $$ language plpgsql;
 
 create or replace function stampede.back() returns void as $$
 begin
+    perform stampede.wait_in_production();
+
 	perform stampede.unapply_migration(m) from (
 		select m from pg_temp.migration m
 		where id in (select migration_id from stampede.applied_migration)
@@ -110,6 +132,8 @@ $$ language plpgsql;
 
 create or replace function stampede.unapply() returns void as $$
 begin
+    perform stampede.wait_in_production();
+
 	perform stampede.unapply_migration(m) from (
 		select m from pg_temp.migration m
 		where id in (select migration_id from stampede.applied_migration)
@@ -119,11 +143,30 @@ end
 $$ language plpgsql;
 
 create or replace function stampede.reset() returns void as $$
-	drop schema if exists public cascade;
-	create schema public;
-	truncate stampede.applied_migration;
-$$ language sql;
+declare
+    schema_name text;
+begin
+    perform stampede.wait_in_production();
 
+    for schema_name in select nspname from pg_namespace where nspname !~ '^pg_' and nspname not in ('stampede', 'information_schema')
+    loop
+        execute 'drop schema ' || quote_ident(schema_name) || ' cascade';
+    end loop;
+
+create schema public;
+truncate stampede.applied_migration;
+
+end
+$$ language plpgsql;
+
+do $$
+    begin
+        if not stampede.is_production() then
+            raise warning 'development database. Will not warn when performing destructive commands!';
+        end if;
+    end
+$$;
+\echo
 
 create or replace function stampede.clean_up() returns void as $$
 	drop function stampede.define_migration(int, text, text, text);
