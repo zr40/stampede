@@ -1,3 +1,3 @@
 \echo Unapplying migrations...
 select stampede.unapply();
-drop table stampede.applied_migrations;
+drop table stampede.applied_migration;
