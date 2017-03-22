@@ -1,4 +1,5 @@
 #!/bin/sh
+shopt -s nullglob
 
 DIR=`dirname $0`
 cat $DIR/prepare.sql migrations/*.sql $DIR/commands/$1.sql $DIR/clean_up.sql | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
