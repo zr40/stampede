@@ -176,6 +176,7 @@ create or replace function stampede.clean_up() returns void as $$
 	drop function stampede.back();
 	drop function stampede.clean_up();
 	drop function stampede.define_migration(int, text, text, text);
+	drop function stampede.is_production();
 	drop function stampede.migrate();
 	drop function stampede.reset();
 	drop function stampede.show_migration_status(pg_temp.migration);
@@ -183,6 +184,7 @@ create or replace function stampede.clean_up() returns void as $$
 	drop function stampede.step();
 	drop function stampede.unapply_migration(pg_temp.migration);
 	drop function stampede.unapply();
+	drop function stampede.wait_in_production();
 $$ language sql;
 
 do $$
