@@ -48,18 +48,29 @@ $$ language sql;
 
 create or replace function stampede.show_migration_status(migration pg_temp.migration) returns void as $$
 begin
-	if (select true from stampede.applied_migration where migration_id = migration.id)
-	then
-		raise notice 'Migration % is applied (%)', migration.id, migration.name;
+	if (select true from stampede.applied_migration where migration_id = migration.id) then
+		if migration.name = '' then
+			raise notice 'Migration % is applied', migration.id;
+		else
+			raise notice 'Migration % is applied (%)', migration.id, migration.name;
+		end if;
 	else
-		raise notice 'Migration % is not applied (%)', migration.id, migration.name;
+		if migration.name = '' then
+			raise notice 'Migration % is not applied', migration.id;
+		else
+			raise notice 'Migration % is not applied (%)', migration.id, migration.name;
+		end if;
 	end if;
 end
 $$ language plpgsql;
 
 create or replace function stampede.apply_migration(migration pg_temp.migration) returns void as $$
 begin
-	raise notice 'Applying migration %...', case when migration.name = '' then migration.id::text else migration.id || ': ' || migration.name end;
+	if migration.name = '' then
+		raise notice 'Applying migration %...', migration.id;
+	else
+		raise notice 'Applying migration %: %...', migration.id, migration.name;
+	end if;
 
 	execute migration.apply;
 
@@ -69,10 +80,13 @@ $$ language plpgsql;
 
 create or replace function stampede.unapply_migration(migration pg_temp.migration) returns void as $$
 begin
-	raise notice 'Unapplying migration %...', case when migration.name = '' then migration.id::text else migration.id || ': ' || migration.name end;
+	if migration.name = '' then
+		raise notice 'Unapplying migration %...', migration.id;
+	else
+		raise notice 'Unapplying migration %: %...', migration.id, migration.name;
+	end if;
 
-	if migration.unapply is null
-	then
+	if migration.unapply is null then
 		raise exception 'Migration % has no unapply statements', migration.id;
 	end if;
 
@@ -148,15 +162,28 @@ declare
 begin
 	perform stampede.wait_in_production();
 
-	for schema_name in select nspname from pg_namespace where nspname !~ '^pg_' and nspname not in ('stampede', 'information_schema')
-	loop
-		execute 'drop schema ' || quote_ident(schema_name) || ' cascade';
+	for schema_name in select nspname from pg_namespace where nspname !~ '^pg_' and nspname not in ('stampede', 'information_schema') loop
+		execute format('drop schema %I cascade', schema_name);
 	end loop;
 
 	create schema public;
 	truncate stampede.applied_migration;
 end
 $$ language plpgsql;
+
+create or replace function stampede.clean_up() returns void as $$
+	drop function stampede.apply_migration(pg_temp.migration);
+	drop function stampede.back();
+	drop function stampede.clean_up();
+	drop function stampede.define_migration(int, text, text, text);
+	drop function stampede.migrate();
+	drop function stampede.reset();
+	drop function stampede.show_migration_status(pg_temp.migration);
+	drop function stampede.status();
+	drop function stampede.step();
+	drop function stampede.unapply_migration(pg_temp.migration);
+	drop function stampede.unapply();
+$$ language sql;
 
 do $$
 	begin
@@ -166,17 +193,3 @@ do $$
 	end
 $$;
 \echo
-
-create or replace function stampede.clean_up() returns void as $$
-	drop function stampede.define_migration(int, text, text, text);
-	drop function stampede.show_migration_status(pg_temp.migration);
-	drop function stampede.status();
-	drop function stampede.migrate();
-	drop function stampede.step();
-	drop function stampede.back();
-	drop function stampede.unapply();
-	drop function stampede.reset();
-	drop function stampede.apply_migration(pg_temp.migration);
-	drop function stampede.unapply_migration(pg_temp.migration);
-	drop function stampede.clean_up();
-$$ language sql;
