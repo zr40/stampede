@@ -13,7 +13,8 @@ if [ "$1" == "clone" ]; then
     command ''
   else
     command reset
-    PGDATABASE="$2" pg_dump | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
+    PGDATABASE="$2" pg_dump -N stampede | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
+    PGDATABASE="$2" pg_dump --data-only stampede.applied_migration | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
     command migrate
   fi
 else
