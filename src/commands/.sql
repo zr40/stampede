@@ -1,6 +1,7 @@
 \echo usage: stampede [command]
 \echo
 \echo Commands:
+\echo 'status    Show applied and new migrations'
 \echo 'migrate   Apply all migrations'
 \echo 'step      Apply the first unapplied migration'
 \echo 'back      Unapply the last applied migration'
