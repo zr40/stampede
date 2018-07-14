@@ -8,6 +8,7 @@
 \echo Commands for migration development:
 \echo 'unapply   Unapply all migrations'
 \echo 'stomp     Unapply all migrations, then apply all migrations'
+\echo 'redo      Unapply the last applied migration, then apply all migrations'
 \echo 'drop      Clear the database and create the `public` schema'
 \echo 'reset     Clear the database, create the `public` schema, then apply all migrations'
 \echo
