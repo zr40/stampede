@@ -1,6 +1,6 @@
 \o /dev/null
 
-\echo Stampede 1.0.1
+\echo Stampede 1.0.2
 \conninfo
 
 set client_min_messages to warning;
