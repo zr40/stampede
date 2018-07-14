@@ -6,7 +6,7 @@ command() {
   cat "$DIR/prepare.sql" migrations/*.sql "$DIR/commands/$1.sql" "$DIR/clean_up.sql" | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
 }
 
-DIR=$(dirname "$0")
+DIR=$(dirname $(readlink "$0"))
 
 if [ "$1" == "clone" ]; then
   if [ $# -eq 1 ]; then
