@@ -44,5 +44,7 @@ The following commands are destructive, but very useful when writing and testing
 
 * Unapply all applied migrations: `stampede unapply`
 * Unapply all applied migrations, then apply all migrations: `stampede stomp`
+* Unapply last applied migration, then apply all migrations: `stampede redo`
 * Drop schema `public`: `stampede drop`
 * Drop schema `public`, then apply all migrations: `stampede reset`
+* Clone target database, then apply all migrations: `stampede clone targetdb`
