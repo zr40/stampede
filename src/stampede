@@ -2,16 +2,20 @@
 set -e
 shopt -s nullglob
 
-DIR=$(dirname $0)
-command="$1"
+command() {
+  cat "$DIR/prepare.sql" migrations/*.sql "$DIR/commands/$1.sql" "$DIR/clean_up.sql" | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
+}
+
+DIR=$(dirname "$0")
 
 if [ "$1" == "clone" ]; then
   if [ $# -eq 1 ]; then
-    command=""
+    command ''
   else
-    $DIR/stampede reset
-    PGDATABASE=$2 pg_dump | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
-    command=migrate
+    command reset
+    PGDATABASE="$2" pg_dump | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
+    command migrate
   fi
+else
+  command "$1"
 fi
-cat $DIR/prepare.sql migrations/*.sql $DIR/commands/$command.sql $DIR/clean_up.sql | psql -1tqv ON_ERROR_STOP=on -v VERBOSITY=terse --no-psqlrc
